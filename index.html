@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Charleston County — Motivated Seller Leads</title>
+<style>
+  :root {
+    --navy: #0b1e3f; --navy2: #16305c; --gold: #c9a227;
+    --gold2: #e5bc45; --bg: #f4f6fb; --ink: #14213d;
+    --muted: #6b7280; --card: #fff; --border: #dde1ea;
+    --red: #991b1b; --green: #065f46; --amber: #92400e;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+  body { font: 14px/1.5 system-ui, -apple-system, Segoe UI, sans-serif;
+         background: var(--bg); color: var(--ink) }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(160deg, var(--navy) 0%, var(--navy2) 100%);
+    color: #fff; padding: 0 24px;
+    border-bottom: 4px solid var(--gold);
+  }
+  .hdr-inner { max-width: 1440px; margin: 0 auto;
+               display: flex; align-items: center;
+               justify-content: space-between; gap: 16px;
+               padding: 14px 0 }
+  .hdr-left h1 { font-size: 18px; font-weight: 700; letter-spacing: .3px }
+  .hdr-left p  { font-size: 12px; opacity: .75; margin-top: 3px }
+  .hdr-badge   { background: var(--gold); color: var(--navy);
+                 border-radius: 6px; padding: 4px 12px;
+                 font-size: 12px; font-weight: 700 }
+
+  /* ── MAIN WRAP ── */
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 18px 24px }
+
+  /* ── STATS ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr);
+           gap: 12px; margin-bottom: 16px }
+  .stat { background: var(--card); border: 1px solid var(--border);
+          border-radius: 10px; padding: 14px 16px }
+  .stat .n { font-size: 26px; font-weight: 800; color: var(--navy) }
+  .stat .l { font-size: 11px; text-transform: uppercase;
+             letter-spacing: .5px; color: var(--muted); margin-top: 2px }
+  .stat .sub { font-size: 11px; color: var(--muted); margin-top: 4px }
+
+  /* ── DISCLAIMER ── */
+  .disc {
+    background: #fff8e1; border: 1px solid var(--gold);
+    border-left: 4px solid var(--gold); border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 14px; font-size: 12px;
+    color: var(--amber);
+  }
+  .disc strong { color: var(--ink) }
+
+  /* ── FILTERS ── */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+  .filters input, .filters select {
+    padding: 8px 11px; border: 1px solid var(--border);
+    border-radius: 7px; font-size: 13px; background: var(--card);
+    color: var(--ink);
+  }
+  .filters input[type="search"] { flex: 1; min-width: 240px }
+  .btn-export {
+    margin-left: auto; background: var(--navy); color: #fff;
+    border: none; border-radius: 7px; padding: 8px 16px;
+    font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  .btn-export:hover { background: var(--navy2) }
+
+  /* ── TABLE ── */
+  .tbl-wrap { overflow: auto; max-height: 68vh;
+              border: 1px solid var(--border); border-radius: 10px }
+  table { width: 100%; border-collapse: collapse; background: var(--card) }
+  th, td { padding: 8px 10px; text-align: left; font-size: 12.5px;
+           border-bottom: 1px solid var(--border); vertical-align: top }
+  th { background: #eef0f7; color: var(--navy); position: sticky; top: 0;
+       cursor: pointer; user-select: none; font-size: 12px;
+       text-transform: uppercase; letter-spacing: .4px }
+  th:hover { background: #e2e5ef }
+  th .arrow { opacity: .4; margin-left: 3px }
+  th.sorted .arrow { opacity: 1 }
+  tbody tr:hover { background: #f8f9ff }
+
+  /* ── SCORE BADGE ── */
+  .score { display: inline-block; min-width: 40px; text-align: center;
+           padding: 3px 7px; border-radius: 5px; font-weight: 700;
+           font-size: 12px; color: #fff; white-space: nowrap }
+  .score.hi  { background: var(--green) }
+  .score.mid { background: var(--gold); color: var(--ink) }
+  .score.lo  { background: #9ca3af }
+
+  /* ── FLAG TAGS ── */
+  .tag { display: inline-block; padding: 1px 6px; margin: 1px 2px 1px 0;
+         border-radius: 3px; font-size: 11px; white-space: nowrap;
+         background: #eef2ff; color: #3730a3 }
+  .tag-lp   { background: #fef3c7; color: #92400e }
+  .tag-fc   { background: #fee2e2; color: #991b1b }
+  .tag-tax  { background: #ede9fe; color: #5b21b6 }
+  .tag-mech { background: #d1fae5; color: #065f46 }
+  .tag-hoa  { background: #e0f2fe; color: #0369a1 }
+  .tag-prob { background: #fdf2f8; color: #86198f }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted) }
+  .empty p { margin-top: 8px; font-size: 13px }
+
+  footer { text-align: center; color: var(--muted);
+           padding: 18px; font-size: 11px }
+  a { color: var(--navy2) }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-inner">
+    <div class="hdr-left">
+      <h1>Charleston County, SC — Motivated Seller Leads</h1>
+      <p id="hdr-meta">Loading data…</p>
+    </div>
+    <span class="hdr-badge">Register of Deeds</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="n" id="s-total">–</div>
+      <div class="l">Total Leads</div>
+      <div class="sub" id="s-range"></div>
+    </div>
+    <div class="stat">
+      <div class="n" id="s-addr">–</div>
+      <div class="l">With Address</div>
+      <div class="sub">prop or mailing</div>
+    </div>
+    <div class="stat">
+      <div class="n" id="s-hi">–</div>
+      <div class="l">Score ≥ 70</div>
+      <div class="sub">high-priority</div>
+    </div>
+    <div class="stat">
+      <div class="n" id="s-new">–</div>
+      <div class="l">New This Week</div>
+      <div class="sub">filed ≤ 7 days ago</div>
+    </div>
+  </div>
+
+  <!-- Legal notice -->
+  <div class="disc">
+    <strong>⚠ Legal Notice:</strong> SC Code § 30-2-50 prohibits using these
+    public records for commercial solicitation in South Carolina. Review with
+    an attorney before any direct-mail or phone campaign. Court-filed judgments
+    and probate records are <em>not</em> included (SC Judicial Index prohibits
+    automated access).
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input type="search" id="q" placeholder="Search owner, address, doc #, legal…" />
+    <select id="f-cat"><option value="">All doc types</option></select>
+    <select id="f-flag"><option value="">All flags</option></select>
+    <select id="f-score">
+      <option value="0">Any score</option>
+      <option value="50">Score ≥ 50</option>
+      <option value="70">Score ≥ 70</option>
+      <option value="85">Score ≥ 85</option>
+    </select>
+    <select id="f-src">
+      <option value="">All sources</option>
+      <option value="ROD-DayBook">Day Book</option>
+      <option value="ROD-DM">ROD Deeds/Misc</option>
+      <option value="ROD-FL">ROD Tax/Fed Liens</option>
+    </select>
+    <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+  </div>
+
+  <!-- Table -->
+  <div class="tbl-wrap">
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th data-k="score">Score<span class="arrow">↕</span></th>
+          <th data-k="filed">Filed<span class="arrow">↕</span></th>
+          <th data-k="cat_label">Doc Type<span class="arrow">↕</span></th>
+          <th data-k="doc_num">Doc #<span class="arrow">↕</span></th>
+          <th data-k="owner">Owner / Maker<span class="arrow">↕</span></th>
+          <th data-k="prop_address">Property Address<span class="arrow">↕</span></th>
+          <th data-k="mail_address">Mailing Address<span class="arrow">↕</span></th>
+          <th data-k="amount">Amount<span class="arrow">↕</span></th>
+          <th>Flags</th>
+          <th>ROD Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="10" class="empty">
+          <strong>Loading…</strong><p>Fetching records.json</p>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  Data sourced from Charleston County Register of Deeds (charlestoncounty.gov)
+  and the county ArcGIS parcel service. All public record data.
+</footer>
+
+<script>
+let ALL_RECORDS = [];
+let sortKey = "score", sortDir = -1;
+let filtered = [];
+
+const $ = id => document.getElementById(id);
+const fmtAmt = n => n ? "$" + Number(n).toLocaleString("en-US",
+  { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : "";
+const addrFmt = (a, c, s, z) =>
+  [a, c, s, z].filter(Boolean).join(", ");
+
+function scoreClass(s) {
+  return s >= 70 ? "hi" : s >= 50 ? "mid" : "lo";
+}
+function tagClass(f) {
+  if (/lis pend/i.test(f)) return "tag-lp";
+  if (/pre-fore|LP\+FC/i.test(f)) return "tag-fc";
+  if (/tax|IRS|corp/i.test(f)) return "tag-tax";
+  if (/mech/i.test(f)) return "tag-mech";
+  if (/HOA/i.test(f)) return "tag-hoa";
+  if (/probate|estate/i.test(f)) return "tag-prob";
+  return "";
+}
+
+async function load() {
+  try {
+    const res = await fetch("records.json?t=" + Date.now());
+    const data = await res.json();
+    ALL_RECORDS = data.records || [];
+
+    // Header meta
+    $("hdr-meta").textContent =
+      (data.source || "—") + "  ·  " +
+      (data.date_range
+        ? `${data.date_range.from} → ${data.date_range.to}`
+        : "") +
+      (data.fetched_at
+        ? "  ·  fetched " + new Date(data.fetched_at).toLocaleString()
+        : "");
+
+    $("s-total").textContent = data.total ?? ALL_RECORDS.length;
+    $("s-range").textContent = data.date_range
+      ? `${data.date_range.from} – ${data.date_range.to}` : "";
+    $("s-addr").textContent = data.with_address ?? "–";
+    $("s-hi").textContent  = ALL_RECORDS.filter(r => r.score >= 70).length;
+    $("s-new").textContent =
+      ALL_RECORDS.filter(r => (r.flags||[]).includes("New this week")).length;
+
+    // Populate filter dropdowns
+    const cats  = new Set(), flags = new Set();
+    ALL_RECORDS.forEach(r => {
+      if (r.cat_label) cats.add(r.cat_label);
+      (r.flags||[]).forEach(f => flags.add(f));
+    });
+    const catSel = $("f-cat"), flagSel = $("f-flag");
+    [...cats].sort().forEach(c => catSel.add(new Option(c, c)));
+    [...flags].sort().forEach(f => flagSel.add(new Option(f, f)));
+
+    render();
+  } catch (err) {
+    document.querySelector("#tbl tbody").innerHTML =
+      `<tr><td colspan="10" class="empty">
+         <strong>Error</strong><p>${err}</p>
+       </td></tr>`;
+  }
+}
+
+function getFiltered() {
+  const term   = $("q").value.trim().toLowerCase();
+  const cat    = $("f-cat").value;
+  const flag   = $("f-flag").value;
+  const minSc  = +$("f-score").value;
+  const src    = $("f-src").value;
+
+  return ALL_RECORDS.filter(r => {
+    if (cat  && r.cat_label !== cat)                 return false;
+    if (flag && !(r.flags||[]).includes(flag))        return false;
+    if ((r.score||0) < minSc)                         return false;
+    if (src  && r.source !== src)                     return false;
+    if (term) {
+      const hay = [r.owner, r.prop_address, r.mail_address,
+                   r.doc_num, r.legal, r.cat_label, r.grantee]
+        .join(" ").toLowerCase();
+      if (!hay.includes(term)) return false;
+    }
+    return true;
+  });
+}
+
+function render() {
+  filtered = getFiltered();
+  filtered.sort((a, b) => {
+    const av = a[sortKey] ?? "", bv = b[sortKey] ?? "";
+    if (typeof av === "number" && typeof bv === "number")
+      return (av - bv) * sortDir;
+    return String(av).localeCompare(String(bv)) * sortDir;
+  });
+
+  const tbody = document.querySelector("#tbl tbody");
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="empty">'
+      + '<strong>No results</strong>'
+      + '<p>Try loosening your filters.</p></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => `
+    <tr>
+      <td><span class="score ${scoreClass(r.score||0)}">${r.score||0}</span></td>
+      <td>${r.filed||""}</td>
+      <td>${r.cat_label||""}</td>
+      <td style="white-space:nowrap">${r.doc_num||""}</td>
+      <td>${r.owner||""}</td>
+      <td>${addrFmt(r.prop_address,r.prop_city,r.prop_state,r.prop_zip)}</td>
+      <td>${addrFmt(r.mail_address,r.mail_city,r.mail_state,r.mail_zip)}</td>
+      <td style="white-space:nowrap">${fmtAmt(r.amount)}</td>
+      <td>${(r.flags||[]).map(f =>
+        `<span class="tag ${tagClass(f)}">${f}</span>`).join("")}</td>
+      <td>${r.clerk_url
+        ? `<a href="${r.clerk_url}" target="_blank" rel="noopener">view ↗</a>`
+        : ""}</td>
+    </tr>`).join("");
+}
+
+// Sort on header click
+document.querySelectorAll("#tbl th[data-k]").forEach(th => {
+  th.addEventListener("click", () => {
+    const k = th.dataset.k;
+    if (sortKey === k) sortDir = -sortDir;
+    else { sortKey = k; sortDir = k === "score" ? -1 : 1; }
+    document.querySelectorAll("th").forEach(t => t.classList.remove("sorted"));
+    th.classList.add("sorted");
+    render();
+  });
+});
+
+["q","f-cat","f-flag","f-score","f-src"].forEach(id =>
+  $(id).addEventListener("input", render));
+
+// CSV export
+function exportCSV() {
+  const cols = ["Score","Filed","Doc Type","Doc #","Owner","Grantee",
+    "Property Address","Property City","Property State","Property Zip",
+    "Mailing Address","Mailing City","Mailing State","Mailing Zip",
+    "Amount","Flags","Source","ROD Link"];
+  const rows = [cols, ...filtered.map(r => [
+    r.score, r.filed, r.cat_label, r.doc_num, r.owner, r.grantee,
+    r.prop_address, r.prop_city, r.prop_state||"SC", r.prop_zip,
+    r.mail_address, r.mail_city, r.mail_state||"SC", r.mail_zip,
+    r.amount, (r.flags||[]).join("; "), r.source, r.clerk_url
+  ])];
+  const csv = rows.map(r =>
+    r.map(v => `"${String(v||"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a = Object.assign(document.createElement("a"), {
+    href: "data:text/csv;charset=utf-8," + encodeURIComponent(csv),
+    download: `chs_leads_${new Date().toISOString().slice(0,10)}.csv`
+  });
+  a.click();
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+name: Charleston County Lead Scraper
+
+on:
+  schedule:
+    # 07:00 UTC daily = 03:00 ET  (runs while ROD staff is not yet in)
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+    inputs:
+      lookback:
+        description: "Days to look back"
+        required: false
+        default: "7"
+      export_ghl:
+        description: "Write GoHighLevel CSV? (true/false)"
+        required: false
+        default: "true"
+      headless:
+        description: "Run headless? (1=yes / 0=no)"
+        required: false
+        default: "1"
+
+permissions:
+  contents: write   # commit records.json + CSV
+  pages: write      # deploy dashboard
+  id-token: write
+
+concurrency:
+  group: "scrape"
+  cancel-in-progress: false
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  scrape:
+  # ─────────────────────────────────────────────────────────────────────────
+    runs-on: ubuntu-22.04
+    timeout-minutes: 50
+    env:
+      LOOKBACK_DAYS: ${{ github.event.inputs.lookback || '7' }}
+      HEADLESS:      ${{ github.event.inputs.headless || '1' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scraper/requirements.txt
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scraper/requirements.txt
+
+      - name: Install Chromium (Playwright)
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run scraper
+        run: |
+          set -e
+          ARGS="--lookback $LOOKBACK_DAYS --headless $HEADLESS"
+          if [ "${{ github.event.inputs.export_ghl }}" != "false" ]; then
+            ARGS="$ARGS --export-ghl"
+          fi
+          python scraper/fetch.py $ARGS
+
+      - name: Commit results
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dashboard/records.json data/records.json data/*.csv 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(scrape): Charleston County leads $(date -u +%F)"
+            git push
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard
+
+  # ─────────────────────────────────────────────────────────────────────────
+  deploy:
+  # ─────────────────────────────────────────────────────────────────────────
+    needs: scrape
+    runs-on: ubuntu-22.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

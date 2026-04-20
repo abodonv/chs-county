@@ -1,0 +1,7 @@
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+playwright>=1.44
+# dbfread is NOT required — Charleston County uses ArcGIS REST API (no bulk DBF)
+# If you adapt this for a Florida county that does provide a bulk DBF:
+# dbfread>=2.0.7
