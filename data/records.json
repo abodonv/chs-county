@@ -1,9 +1,9 @@
 {
-  "fetched_at": "2026-06-07T10:06:17.353151+00:00",
+  "fetched_at": "2026-06-08T11:59:28.986978+00:00",
   "source": "Charleston County, SC — Register of Deeds + ArcGIS",
   "date_range": {
-    "from": "2026-05-31",
-    "to": "2026-06-07"
+    "from": "2026-06-01",
+    "to": "2026-06-08"
   },
   "total": 0,
   "with_address": 0,
